@@ -1,75 +1,139 @@
 import 'package:flutter/material.dart';
+import 'package:myportofolio_mobile/models/item_homepage.dart';
+import 'package:myportofolio_mobile/widgets/info_card.dart';
+import 'package:myportofolio_mobile/widgets/item_card.dart';
+import 'package:myportofolio_mobile/widgets/project_preview.dart';
 
 class MyHomePage extends StatelessWidget {
-  MyHomePage({super.key});
+  const MyHomePage({super.key});
 
-  final String npm = "2406000001";
-  final String nama = "Burhan";
-  final String kelas = "PBP A";
-
-  final List<ItemHomepage> items = [
-    ItemHomepage("View Projects", Icons.folder),
-    ItemHomepage("Add Project", Icons.add_circle),
-    ItemHomepage("Logout", Icons.logout),
+  static const _viewProjects = ItemHomepage(
+    name: 'View Projects',
+    icon: Icons.folder_open_rounded,
+    color: Color(0xFF254C62),
+  );
+  static const _items = [
+    _viewProjects,
+    ItemHomepage(
+      name: 'Add Project',
+      icon: Icons.add_circle_outline_rounded,
+      color: Color(0xFF315744),
+    ),
+    ItemHomepage(
+      name: 'Logout',
+      icon: Icons.logout_rounded,
+      color: Color(0xFF9A3F2C),
+    ),
   ];
-  
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'MyPortfolio',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w800,
           ),
         ),
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        centerTitle: true,
+        backgroundColor: theme.scaffoldBackgroundColor,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Horizontal row showing 3 InfoCards.
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                InfoCard(title: 'NPM', content: npm),
-                InfoCard(title: 'Name', content: nama),
-                InfoCard(title: 'Class', content: kelas),
-              ],
-            ),
-
-            const SizedBox(height: 16.0),
-
-            // Greeting and 3-column action grid.
-            Center(
+      body: SafeArea(
+        top: false,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 720),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.only(top: 16.0),
+                  const _Introduction(),
+                  const SizedBox(height: 14),
+                  const _CardGroup(
+                    children: [
+                      InfoCard(title: 'NPM', content: '2606816592'),
+                      InfoCard(title: 'Name', content: 'Marcel Mikula'),
+                      InfoCard(title: 'Class', content: 'PBP A'),
+                    ],
+                  ),
+                  const SizedBox(height: 28),
+                  Semantics(
+                    header: true,
                     child: Text(
-                      'Welcome to MyPortfolio Mobile!',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18.0,
+                      'Portfolio actions',
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
-
-                  GridView.count(
-                    primary: true,
-                    padding: const EdgeInsets.all(20),
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    crossAxisCount: 3,
-                    shrinkWrap: true,
-                    children: items.map((ItemHomepage item) {
-                      return ItemCard(item);
-                    }).toList(),
+                  const SizedBox(height: 10),
+                  _CardGroup(
+                    children: [
+                      for (final item in _items)
+                        ItemCard(
+                          item,
+                          onPreview: item == _viewProjects
+                              ? () => showProjectPreview(context)
+                              : null,
+                        ),
+                    ],
                   ),
+                  const SizedBox(height: 24),
+                  const ProjectHighlight(),
                 ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _Introduction extends StatelessWidget {
+  const _Introduction();
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: const Color(0xFF29221E),
+        borderRadius: BorderRadius.circular(22),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(22),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'ACADEMIC PORTFOLIO',
+              style: textTheme.labelSmall?.copyWith(
+                color: const Color(0xFFF4AF97),
+                fontWeight: FontWeight.w800,
+                letterSpacing: 1.4,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Semantics(
+              header: true,
+              child: Text(
+                'Data & AI in practice',
+                style: textTheme.headlineMedium?.copyWith(
+                  color: const Color(0xFFFFFCF8),
+                  fontWeight: FontWeight.w800,
+                  height: 1.05,
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'University projects at the intersection of data and business.',
+              style: textTheme.bodyMedium?.copyWith(
+                color: const Color(0xFFE7D9CE),
               ),
             ),
           ],
@@ -79,82 +143,40 @@ class MyHomePage extends StatelessWidget {
   }
 }
 
-class InfoCard extends StatelessWidget {
-  // Information card displaying a title and its associated content.
-  final String title;
-  final String content;
+class _CardGroup extends StatelessWidget {
+  const _CardGroup({required this.children});
 
-  const InfoCard({super.key, required this.title, required this.content});
+  final List<Widget> children;
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 2.0,
-      child: Container(
-        width: MediaQuery.of(context).size.width / 3.5,
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8.0),
-            Text(content),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class ItemHomepage {
-  final String name;
-  final IconData icon;
-
-  ItemHomepage(this.name, this.icon);
-}
-
-class ItemCard extends StatelessWidget {
-  final ItemHomepage item;
-
-  const ItemCard(this.item, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Theme.of(context).colorScheme.secondary,
-      borderRadius: BorderRadius.circular(12),
-      child: InkWell(
-        onTap: () {
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(
-              SnackBar(content: Text("You pressed the ${item.name} button!"))
-            );
-        },
-        child: Container(
-          padding: const EdgeInsets.all(8),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  item.icon,
-                  color: Colors.white,
-                  size: 30.0,
-                ),
-                const Padding(padding: EdgeInsets.all(3)),
-                Text(
-                  item.name,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.white),
-                ),
+    const gap = 10.0;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Let long labels and large accessibility text grow vertically.
+        final fitsInRow =
+            constraints.maxWidth >= 320 &&
+            MediaQuery.textScalerOf(context).scale(14) <= 17;
+        if (fitsInRow) {
+          return Row(
+            children: [
+              for (var index = 0; index < children.length; index++) ...[
+                if (index > 0) const SizedBox(width: gap),
+                Expanded(child: children[index]),
               ],
-            ),
-          ),
-        ),
-      ),
+            ],
+          );
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            for (var index = 0; index < children.length; index++) ...[
+              if (index > 0) const SizedBox(height: gap),
+              children[index],
+            ],
+          ],
+        );
+      },
     );
   }
 }
