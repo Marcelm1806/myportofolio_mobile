@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:myportofolio_mobile/main.dart';
 import 'package:myportofolio_mobile/widgets/info_card.dart';
-import 'package:myportofolio_mobile/widgets/item_card.dart';
+import 'package:myportofolio_mobile/screens/project_form.dart';
+import 'package:myportofolio_mobile/widgets/project_card.dart';
 
 const _actions = ['View Projects', 'Add Project', 'Logout'];
 
@@ -70,6 +71,11 @@ void main() {
         expect(find.byType(SnackBar), findsOneWidget);
         expect(find.text('You pressed the $name button!'), findsOneWidget);
         expect(find.byType(BottomSheet), findsNothing);
+        if (name == 'Add Project') {
+          expect(find.byType(ProjectFormPage), findsOneWidget);
+          await tester.tap(find.byTooltip('Back to portfolio'));
+          await tester.pumpAndSettle();
+        }
       }
     },
   );

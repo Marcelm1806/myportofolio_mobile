@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:myportofolio_mobile/models/item_homepage.dart';
+import 'package:myportofolio_mobile/screens/project_form.dart';
 import 'package:myportofolio_mobile/widgets/info_card.dart';
-import 'package:myportofolio_mobile/widgets/item_card.dart';
+import 'package:myportofolio_mobile/widgets/left_drawer.dart';
+import 'package:myportofolio_mobile/widgets/project_card.dart';
 import 'package:myportofolio_mobile/widgets/project_preview.dart';
 
 class MyHomePage extends StatelessWidget {
@@ -40,6 +42,7 @@ class MyHomePage extends StatelessWidget {
         centerTitle: true,
         backgroundColor: theme.scaffoldBackgroundColor,
       ),
+      drawer: const LeftDrawer(currentPage: PortfolioPage.home),
       body: SafeArea(
         top: false,
         child: SingleChildScrollView(
@@ -75,6 +78,13 @@ class MyHomePage extends StatelessWidget {
                       for (final item in _items)
                         ItemCard(
                           item,
+                          onNavigate: item.name == 'Add Project'
+                              ? () => Navigator.of(context).push(
+                                  MaterialPageRoute<void>(
+                                    builder: (_) => const ProjectFormPage(),
+                                  ),
+                                )
+                              : null,
                           onPreview: item == _viewProjects
                               ? () => showProjectPreview(context)
                               : null,

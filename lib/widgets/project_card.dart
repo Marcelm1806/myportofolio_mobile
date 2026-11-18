@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:myportofolio_mobile/models/item_homepage.dart';
 
 class ItemCard extends StatelessWidget {
-  const ItemCard(this.item, {super.key, this.onPreview});
+  const ItemCard(this.item, {super.key, this.onPreview, this.onNavigate});
 
   final ItemHomepage item;
   final VoidCallback? onPreview;
+  final VoidCallback? onNavigate;
 
   void _showFeedback(BuildContext context) {
     final preview = onPreview;
@@ -32,7 +33,10 @@ class ItemCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
-          onTap: () => _showFeedback(context),
+          onTap: () {
+            _showFeedback(context);
+            onNavigate?.call();
+          },
           focusColor: Colors.white24,
           hoverColor: Colors.white12,
           splashColor: Colors.white24,
